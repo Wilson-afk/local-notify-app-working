@@ -3,6 +3,7 @@ import { LocalNotifications } from '@capacitor/local-notifications';
 import { ToastController, IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; // Needed for pipes like date
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +17,9 @@ export class HomePage {
   message = '';
   selectedDate: string = '';
   selectedTime: string = '';
+  lastScheduledDate: Date | null = null;
+  combinedDateTime: any;
+  combinedDateTime1: any;
 
   constructor(private toastController: ToastController) {
     this.requestPermission();
@@ -29,48 +33,122 @@ export class HomePage {
     }
   }
 
-  async scheduleNotification() {
-    if (!this.message || !this.selectedDate || !this.selectedTime) {
-      this.showToast('Please provide all inputs', 'danger');
-      return;
-    }
+//   async scheduleNotification() {
+//   if (!this.message || !this.selectedDate || !this.selectedTime) {
+//     this.showToast('Please provide all inputs', 'danger');
+//     return;
+//   }
 
-    const combinedDateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
-    const id = Date.now();
+//   // Combine and parse the datetime
+//   const combinedDateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
 
-    try {
-      await LocalNotifications.createChannel({
-        id: 'reminders',
-        name: 'Reminders',
-        importance: 5,
-        sound: 'notification.wav',
-      });
+//   // Store it so we can show it in HTML
+//   this.lastScheduledDate = combinedDateTime;
 
-      await LocalNotifications.schedule({
-        notifications: [
-          {
-            title: 'Reminder',
-            body: this.message,
-            id,
-            schedule: { at: combinedDateTime },
-            channelId: 'reminders',
-            sound: 'notification.wav',
-            smallIcon: 'ic_stat_icon_config_sample',
-            largeIcon: 'res://large_icon',
-          },
-        ],
-      });
+//   if (isNaN(combinedDateTime.getTime())) {
+//     this.showToast('Invalid date/time format', 'danger');
+//     return;
+//   }
 
-      this.showToast('Notification scheduled!', 'success');
-      this.message = '';
-      this.selectedDate = '';
-      this.selectedTime = '';
-      this.loadPendingNotifications();
-    } catch (err) {
-      console.error('Failed to schedule:', err);
-      this.showToast('Failed to schedule notification', 'danger');
-    }
+//   if (combinedDateTime <= new Date()) {
+//     this.showToast('Date/time must be in the future', 'danger');
+//     return;
+//   }
+
+//   const id = Math.floor(Math.random() * 100000);
+//   const isAndroid = Capacitor.getPlatform() === 'android';
+
+//   try {
+//     await LocalNotifications.createChannel({
+//       id: 'reminders',
+//       name: 'Reminders',
+//       importance: 5,
+//       sound: 'notification.wav',
+//     });
+
+//     await LocalNotifications.schedule({
+//       notifications: [
+//         {
+//           title: 'Reminder',
+//           body: this.message,
+//           id,
+//           schedule: { at: combinedDateTime },
+//           channelId: isAndroid ? 'reminders' : undefined,
+//           sound: 'notification.wav',
+//           smallIcon: isAndroid ? 'ic_stat_icon_config_sample' : undefined,
+//           largeIcon: isAndroid ? 'res://large_icon' : undefined,
+//         },
+//       ],
+//     });
+
+//     this.showToast('Notification scheduled!', 'success');
+//     this.message = '';
+//     this.selectedDate = '';
+//     this.selectedTime = '';
+//     this.loadPendingNotifications();
+//   } catch (err) {
+//     console.error('❌ Notification error:', err);
+//     this.showToast('Notification failed: ' + JSON.stringify(err), 'danger');
+//   }
+// }
+
+
+async scheduleNotification() {
+  if (!this.message || !this.selectedDate || !this.selectedTime) {
+    this.showToast('Please provide all inputs', 'danger');
+    return;
   }
+
+  this.combinedDateTime = new Date(`${this.selectedDate}T${this.selectedTime}`);
+
+  const datePart = this.selectedDate.split('T')[0]; // e.g., "2025-07-23"
+  this.combinedDateTime1 = new Date(`${datePart}T${this.selectedTime}`);
+
+
+
+  if (this.combinedDateTime <= new Date()) {
+    this.showToast('Date/time must be in the future', 'danger');
+    return;
+  }
+
+  const id = Math.floor(Math.random() * 100000);
+  const isAndroid = Capacitor.getPlatform() === 'android';
+
+  try {
+    await LocalNotifications.createChannel({
+      id: 'reminders',
+      name: 'Reminders',
+      importance: 5,
+      sound: 'notification.wav',
+    });
+
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          title: 'Reminder',
+          body: this.message,
+          id,
+          schedule: { at: this.combinedDateTime },
+          channelId: isAndroid ? 'reminders' : undefined,
+          sound: 'notification.wav',
+          smallIcon: isAndroid ? 'ic_stat_icon_config_sample' : undefined,
+          largeIcon: isAndroid ? 'res://large_icon' : undefined,
+        },
+      ],
+    });
+
+    this.showToast('Notification scheduled!', 'success');
+    this.message = '';
+    this.selectedDate = '';
+    this.selectedTime = '';
+    this.loadPendingNotifications();
+  } catch (err) {
+    console.error('❌ Notification error:', err);
+    this.showToast('Notification failed: ' + JSON.stringify(err), 'danger');
+  }
+}
+
+
 
   async loadPendingNotifications() {
     const result = await LocalNotifications.getPending();

@@ -4,7 +4,7 @@
     </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" scroll-y="true" class="notification-content">
 
     <ion-item>
         <ion-label position="stacked">Message</ion-label>
@@ -23,6 +23,44 @@
 
     <ion-button expand="block" (click)="scheduleNotification()">Schedule Notification</ion-button>
 
+    <ion-item>
+        <ion-label>
+            <h2>Debug Info-1:</h2>
+            <p><strong>Selected Date:</strong> {{ selectedDate }}</p>
+            <p><strong>Selected Time:</strong> {{ selectedTime }}</p>
+            <br>
+            <p><strong>Submitted Date and Time (ISO):</strong> {{ combinedDateTime.toISOString() }}</p>
+            <br>
+            <p><strong>Submitted Date and Time (Local):</strong> {{ combinedDateTime | date: 'medium' }}</p>
+            <!-- <p *ngIf="lastScheduledDate"><strong>Combined ISO:</strong> {{ lastScheduledDate.toISOString() }}</p> -->
+            <!-- <p *ngIf="lastScheduledDate"><strong>Combined Local:</strong> {{ lastScheduledDate | date: 'medium' }}</p> -->
+        </ion-label>
+    </ion-item>
+
+    <ion-item>
+        <ion-label>
+            <h2>Debug Info-2:</h2>
+            <br>
+            <p><strong>Submitted Date and Time1 (ISO):</strong> {{ combinedDateTime1.toISOString() }}</p>
+            <br>
+            <p><strong>Submitted Date and Time1 (Local):</strong> {{ combinedDateTime1 | date: 'medium' }}</p>
+            <!-- <p *ngIf="lastScheduledDate"><strong>Combined ISO:</strong> {{ lastScheduledDate.toISOString() }}</p> -->
+            <!-- <p *ngIf="lastScheduledDate"><strong>Combined Local:</strong> {{ lastScheduledDate | date: 'medium' }}</p> -->
+        </ion-label>
+    </ion-item>
+
+    <!-- 
+    <ion-item *ngIf="selectedDate || selectedTime || lastScheduledDate">
+        <ion-label>
+            <h2>Debug Info-2:</h2>
+            <p><strong>Selected Date:</strong> {{ selectedDate }}</p>
+            <p><strong>Selected Time:</strong> {{ selectedTime }}</p>
+            <p *ngIf="lastScheduledDate"><strong>Combined ISO:</strong> {{ lastScheduledDate.toISOString() }}</p>
+            <p *ngIf="lastScheduledDate"><strong>Combined Local:</strong> {{ lastScheduledDate | date: 'medium' }}</p>
+        </ion-label>
+    </ion-item> -->
+
+
     <ion-list *ngIf="scheduled.length > 0" class="ion-margin-top">
         <ion-list-header>
             <ion-label>Scheduled Notifications</ion-label>
@@ -30,12 +68,14 @@
         <ion-item *ngFor="let n of scheduled">
             <ion-label>
                 <h2>{{ n.body }}</h2>
-                <p>{{ n.schedule?.at | date:'medium' }}</p>
+                <p>{{ n.schedule?.at | date: 'medium' }}</p>
             </ion-label>
             <ion-button slot="end" fill="clear" color="danger" (click)="cancelNotification(n.id)">
                 Cancel
             </ion-button>
         </ion-item>
     </ion-list>
+
+    <div style="height: 80px;"></div>
 
 </ion-content>
