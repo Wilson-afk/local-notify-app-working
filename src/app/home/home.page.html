@@ -1,11 +1,41 @@
 <ion-header>
     <ion-toolbar>
-        <ion-title>Local Notify</ion-title>
+        <ion-title>Local Notifications</ion-title>
     </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-    <ion-button expand="block" (click)="scheduleNotification()">
-        Schedule Notification
-    </ion-button>
+
+    <ion-item>
+        <ion-label position="stacked">Message</ion-label>
+        <ion-input [(ngModel)]="message" placeholder="Enter your reminder"></ion-input>
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="stacked">Select Date</ion-label>
+        <ion-datetime display-format="YYYY-MM-DD" [(ngModel)]="selectedDate" presentation="date"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+        <ion-label position="stacked">Select Time</ion-label>
+        <ion-datetime display-format="HH:mm" [(ngModel)]="selectedTime" presentation="time"></ion-datetime>
+    </ion-item>
+
+    <ion-button expand="block" (click)="scheduleNotification()">Schedule Notification</ion-button>
+
+    <ion-list *ngIf="scheduled.length > 0" class="ion-margin-top">
+        <ion-list-header>
+            <ion-label>Scheduled Notifications</ion-label>
+        </ion-list-header>
+        <ion-item *ngFor="let n of scheduled">
+            <ion-label>
+                <h2>{{ n.body }}</h2>
+                <p>{{ n.schedule?.at | date:'medium' }}</p>
+            </ion-label>
+            <ion-button slot="end" fill="clear" color="danger" (click)="cancelNotification(n.id)">
+                Cancel
+            </ion-button>
+        </ion-item>
+    </ion-list>
+
 </ion-content>
