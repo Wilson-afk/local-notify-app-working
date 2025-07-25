@@ -4,7 +4,7 @@ This is a simple Ionic Angular app that allows users to schedule local notificat
 
 ---
 
-## 🚀 Features
+## Features
 
 - Schedule local notifications by selecting a date and time
 - Cancel scheduled notifications
@@ -13,9 +13,9 @@ This is a simple Ionic Angular app that allows users to schedule local notificat
 
 ---
 
-## 📦 Project Setup
+## Project Setup
 
-### 1. Install Dependencies
+### Commands
 ```bash
 npm install
 ionic build
